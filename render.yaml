@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: trapdoor-rsa
+    runtime: node
+    plan: free
+    buildCommand: npm test
+    startCommand: node server.js
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production

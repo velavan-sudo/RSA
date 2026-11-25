@@ -1,0 +1,15 @@
+{
+  "name": "trapdoor-rsa",
+  "version": "1.0.0",
+  "private": true,
+  "description": "TRAPDOOR — Textbook RSA Cryptography Web Portal",
+  "main": "server.js",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "test": "node -e \"const r = require('./lib/engine').selfTest(); console.log('engine ok: n=' + r.n + ' d=' + r.d);\""
+  },
+  "dependencies": {}
+}
