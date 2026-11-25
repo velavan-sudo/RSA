@@ -26,6 +26,14 @@ TRAPDOOR listening on http://0.0.0.0:8000
 
 Set `PORT` to override port `8000`.
 
+### Deploying to Render
+
+This repository includes `render.yaml` and `package.json` for Render Web Services (not a static site or GitHub Pages, because key generation, encryption, decryption, and SSE streaming run on the Node.js server):
+
+1. Open [Render Dashboard](https://dashboard.render.com/) and select **New +** -> **Web Service** (or **Blueprint**).
+2. Connect `velavan-sudo/RSA` on branch `main`.
+3. Render automatically reads `render.yaml` (`Build Command: npm test`, `Start Command: node server.js`, `Health Check Path: /api/health`) and assigns `process.env.PORT`.
+
 ---
 
 ## File Layout
