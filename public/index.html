@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TRAPDOOR — RSA Key Generation, Encryption &amp; Decryption</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <!-- Section 2: Full-viewport paper loading curtain -->
+  <div class="load-curtain" aria-label="Loading TRAPDOOR instrument">
+    <div class="load-top">
+      <span class="mono-label">TRAPDOOR / 001</span>
+      <span class="mono-label muted-text">NUMBER THEORY INSTRUMENT // STDIO</span>
+    </div>
+    <div class="load-mid">
+      <span class="load-num">000</span>
+    </div>
+    <div class="load-bot">
+      <div class="load-step-row">
+        <span class="load-step"><span id="loadStepText">STARTING ENGINE</span> <span id="loadCursor" class="load-cursor" aria-hidden="true">&#9612;</span></span>
+        <span class="mono-label muted-text">BIGINT ENGINE</span>
+      </div>
+      <div class="load-rule-track">
+        <div class="load-rule"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="shell">
+    <!-- Top Masthead -->
+    <header class="masthead" data-enter>
+      <div class="masthead-brand">
+        <span class="brand-mark">TRAPDOOR</span>
+        <span class="masthead-divider" aria-hidden="true">/</span>
+        <span class="mono-label muted-text">SPEC 1977 · RIVEST–SHAMIR–ADLEMAN</span>
+      </div>
+      <div class="masthead-controls">
+        <div id="apiPill" class="api-pill" role="status" aria-live="polite">
+          <span class="pill-indicator" aria-hidden="true"></span>
+          <span id="apiStatus" class="mono-label">CHECKING ENGINE</span>
+          <span class="pill-sep" aria-hidden="true">·</span>
+          <span id="apiLatency" class="mono-label muted-text">-- MS</span>
+        </div>
+        <button id="presentBtn" type="button" class="btn btn-ghost" title="Toggle lecture view (Key: P)">
+          PRESENT <span class="key-hint">[P]</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Two-column Hero (1.1fr .9fr) -->
+    <section class="hero" data-enter>
+      <div class="hero-copy">
+        <p class="eyebrow">RSA · KEY GENERATION / ENCRYPTION / DECRYPTION</p>
+        <h1 class="headline">RSA, with the lid off.</h1>
+        <p class="subhead">Generate a key pair, encrypt a message, decrypt it again — every number shown, every step streamed from the server.</p>
+      </div>
+
+      <aside class="hero-plate" aria-label="Arithmetic trapdoor specification">
+        <div class="plate-equations">
+          <div class="eq-header">
+            <span class="mono-label muted-text">TRAPDOOR IDENTITIES</span>
+            <span class="mono-label muted-text">Z / nZ</span>
+          </div>
+          <dl class="eq-grid">
+            <div class="eq-row">
+              <dt class="mono-label">MODULUS</dt>
+              <dd class="eq-formula">n = p &times; q</dd>
+            </div>
+            <div class="eq-row">
+              <dt class="mono-label">TOTIENT</dt>
+              <dd class="eq-formula">&phi;(n) = (p &minus; 1)(q &minus; 1)</dd>
+            </div>
+            <div class="eq-row">
+              <dt class="mono-label">INVERSE</dt>
+              <dd class="eq-formula">e &middot; d &equiv; 1 (mod &phi;(n))</dd>
+            </div>
+            <div class="eq-row">
+              <dt class="mono-label">CYCLE</dt>
+              <dd class="eq-formula">c = m<sup>e</sup> mod n &rarr; m = c<sup>d</sup> mod n</dd>
+            </div>
+          </dl>
+        </div>
+
+        <div class="plate-dial-row">
+          <div class="clock-unit">
+            <svg id="clockSvg" class="clock-svg" viewBox="0 0 140 140" role="img" aria-label="Modular arithmetic clock dial">
+              <circle cx="70" cy="70" r="62" class="clock-ring-outer" />
+              <circle cx="70" cy="70" r="48" class="clock-ring-inner" />
+              <!-- Cardinal and 30-degree ticks -->
+              <line x1="70" y1="8" x2="70" y2="17" class="clock-tick-major" />
+              <line x1="101" y1="16.3" x2="97.5" y2="22.4" class="clock-tick-minor" />
+              <line x1="123.7" y1="39" x2="117.6" y2="42.5" class="clock-tick-minor" />
+              <line x1="132" y1="70" x2="123" y2="70" class="clock-tick-major" />
+              <line x1="123.7" y1="101" x2="117.6" y2="97.5" class="clock-tick-minor" />
+              <line x1="101" y1="123.7" x2="97.5" y2="117.6" class="clock-tick-minor" />
+              <line x1="70" y1="132" x2="70" y2="123" class="clock-tick-major" />
+              <line x1="39" y1="123.7" x2="42.5" y2="117.6" class="clock-tick-minor" />
+              <line x1="16.3" y1="101" x2="22.4" y2="97.5" class="clock-tick-minor" />
+              <line x1="8" y1="70" x2="17" y2="70" class="clock-tick-major" />
+              <line x1="16.3" y1="39" x2="22.4" y2="42.5" class="clock-tick-minor" />
+              <line x1="39" y1="16.3" x2="42.5" y2="22.4" class="clock-tick-minor" />
+              <!-- Dial cardinal numerals -->
+              <text x="70" y="27" text-anchor="middle" class="clock-numeral">0</text>
+              <text x="114" y="73" text-anchor="middle" class="clock-numeral">.25</text>
+              <text x="70" y="119" text-anchor="middle" class="clock-numeral">.50</text>
+              <text x="27" y="73" text-anchor="middle" class="clock-numeral">.75</text>
+              <!-- Center crosshair -->
+              <line x1="65" y1="70" x2="75" y2="70" class="clock-cross" />
+              <line x1="70" y1="65" x2="70" y2="75" class="clock-cross" />
+              <!-- Rotating needle -->
+              <g id="clockNeedle" class="clock-needle">
+                <line x1="70" y1="82" x2="70" y2="18" class="needle-shaft" />
+                <polygon points="70,13 67,22 73,22" class="needle-tip" />
+                <rect x="68" y="68" width="4" height="4" class="needle-hub" />
+              </g>
+            </svg>
+          </div>
+
+          <div class="clock-meta">
+            <span class="mono-label rust-text">MOD n — WRAP AROUND</span>
+            <p id="insightText" class="insight-copy">n is public. d is not. That's the whole trick.</p>
+            <div class="dial-readout">
+              <span class="mono-label muted-text">DIAL PHASE</span>
+              <span id="clockAngleVal" class="mono-value">000.0&deg;</span>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- SSE Stage Pipeline Rail -->
+    <section class="pipeline-strip" aria-label="Server computation pipeline" data-enter>
+      <div class="pipeline-head">
+        <span class="mono-label">SSE COMPUTATION PIPELINE</span>
+        <span id="activeStageLabel" class="mono-label muted-text">IDLE</span>
+      </div>
+      <div class="pipeline-track-wrap">
+        <div class="pipeline-line">
+          <div id="pipeDot" class="pipe-dot" aria-hidden="true"></div>
+        </div>
+        <div class="pipeline-nodes">
+          <div class="pipe-node" data-step="candidate">
+            <span class="pipe-tick" aria-hidden="true"></span>
+            <span class="mono-label">01 CANDIDATE</span>
+          </div>
+          <div class="pipe-node" data-step="prime">
+            <span class="pipe-tick" aria-hidden="true"></span>
+            <span class="mono-label">02 PRIME TEST</span>
+          </div>
+          <div class="pipe-node" data-step="modulus">
+            <span class="pipe-tick" aria-hidden="true"></span>
+            <span class="mono-label">03 MODULUS</span>
+          </div>
+          <div class="pipe-node" data-step="exponent">
+            <span class="pipe-tick" aria-hidden="true"></span>
+            <span class="mono-label">04 EXPONENTS</span>
+          </div>
+          <div class="pipe-node" data-step="encrypt">
+            <span class="pipe-tick" aria-hidden="true"></span>
+            <span class="mono-label">05 ENCRYPT</span>
+          </div>
+          <div class="pipe-node" data-step="decrypt">
+            <span class="pipe-tick" aria-hidden="true"></span>
+            <span class="mono-label">06 DECRYPT</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Present Mode Caption (hidden unless body.present) -->
+    <div id="presentCaption" class="present-caption hidden" aria-live="polite">
+      n is public. d is not. That's the whole trick.
+    </div>
+
+    <!-- Workspace: 300px Control Rail + 1fr Dark Instrument Bay -->
+    <main class="workspace" data-enter>
+      <!-- Left Rail (300px) -->
+      <aside class="control-rail" aria-label="Instrument controls">
+        <!-- 01 / KEY PAIR -->
+        <section class="rail-section">
+          <div class="rail-header">
+            <h2 class="mono-label">01 / KEY PAIR</h2>
+            <span class="mono-label muted-text">MILLER–RABIN</span>
+          </div>
+          <label for="keyBits" class="field-label mono-label muted-text">PRIME BIT WIDTH (p, q)</label>
+          <select id="keyBits" class="mono-select">
+            <option value="64" selected>64-BIT PRIMES (n &approx; 128-BIT)</option>
+            <option value="128">128-BIT PRIMES (n &approx; 256-BIT)</option>
+          </select>
+          <button id="generateBtn" type="button" class="btn btn-primary">GENERATE KEYS</button>
+        </section>
+
+        <!-- 02 / MESSAGE -->
+        <section class="rail-section">
+          <div class="rail-header">
+            <h2 class="mono-label">02 / MESSAGE</h2>
+            <span class="mono-label muted-text">UTF-8 &harr; INT</span>
+          </div>
+
+          <label for="msgInput" class="field-label mono-label muted-text">PLAINTEXT STRING</label>
+          <input id="msgInput" type="text" class="mono-input" value="hello" autocomplete="off" spellcheck="false">
+          <button id="encryptBtn" type="button" class="btn btn-blue">ENCRYPT</button>
+
+          <div class="rail-subdivider"></div>
+
+          <label for="cipherInput" class="field-label mono-label muted-text">CIPHERTEXT INTEGER (c)</label>
+          <textarea id="cipherInput" class="mono-textarea" rows="3" placeholder="Decimal integer c..." spellcheck="false"></textarea>
+          <button id="decryptBtn" type="button" class="btn btn-rust">DECRYPT</button>
+
+          <p id="errorBanner" class="error-banner hidden" role="alert"></p>
+        </section>
+
+        <!-- 03 / OUTPUT -->
+        <section class="rail-section rail-log-section">
+          <div class="rail-header">
+            <h2 class="mono-label">03 / OUTPUT</h2>
+            <span id="logCount" class="mono-label muted-text">00 EVENTS</span>
+          </div>
+          <div id="eventLog" class="event-log" role="log" aria-live="polite">
+            <div class="log-row muted-row">
+              <span class="log-time">--:--:--</span>
+              <span class="log-msg">awaiting key generation command</span>
+            </div>
+          </div>
+        </section>
+      </aside>
+
+      <!-- Right Column: Dark Instrument Bay (#121417) -->
+      <section class="instrument-bay" aria-label="RSA Register and Cipher Readout Bay">
+        <!-- Required 12px ruler strip with tiny labels 00 08 16 24 ... -->
+        <div class="bay-ruler-wrap" aria-hidden="true">
+          <div class="bay-ruler"></div>
+          <div class="bay-ruler-labels">
+            <span>00</span>
+            <span>08</span>
+            <span>16</span>
+            <span>24</span>
+            <span>32</span>
+            <span>40</span>
+            <span>48</span>
+            <span>56</span>
+            <span>64</span>
+          </div>
+        </div>
+
+        <div class="bay-inner">
+          <!-- Key Registers Header -->
+          <div class="bay-section-head">
+            <div class="bay-title-group">
+              <span class="bay-index">BAY A</span>
+              <span class="bay-heading">ARITHMETIC KEY REGISTERS</span>
+            </div>
+            <span id="keyMetaBadge" class="bay-meta">UNINITIALIZED · 0 DIGITS</span>
+          </div>
+
+          <!-- Six Numbered Monospace Registers: p, q, n, phi(n), e, d -->
+          <div class="register-grid">
+            <article class="reg" data-reg="p">
+              <div class="reg-top">
+                <span class="reg-num">REG 01 // p</span>
+                <span class="reg-role">SECRET PRIME I</span>
+              </div>
+              <div id="pVal" class="reg-value">—</div>
+            </article>
+
+            <article class="reg" data-reg="q">
+              <div class="reg-top">
+                <span class="reg-num">REG 02 // q</span>
+                <span class="reg-role">SECRET PRIME II</span>
+              </div>
+              <div id="qVal" class="reg-value">—</div>
+            </article>
+
+            <article class="reg reg-wide" data-reg="n">
+              <div class="reg-top">
+                <span class="reg-num">REG 03 // n = p &times; q</span>
+                <div class="reg-badges">
+                  <span id="nDigits" class="reg-role">MODULUS</span>
+                  <span class="stamp stamp-pub">PUB</span>
+                </div>
+              </div>
+              <div id="nVal" class="reg-value">—</div>
+            </article>
+
+            <article class="reg reg-wide" data-reg="phi">
+              <div class="reg-top">
+                <span class="reg-num">REG 04 // &phi;(n) = (p &minus; 1)(q &minus; 1)</span>
+                <span class="reg-role">EULER TOTIENT</span>
+              </div>
+              <div id="phiVal" class="reg-value">—</div>
+            </article>
+
+            <article class="reg" data-reg="e">
+              <div class="reg-top">
+                <span class="reg-num">REG 05 // e</span>
+                <div class="reg-badges">
+                  <span class="reg-role">COPRIME TO &phi;(n)</span>
+                  <span class="stamp stamp-pub">PUB</span>
+                </div>
+              </div>
+              <div id="eVal" class="reg-value">—</div>
+            </article>
+
+            <article class="reg" data-reg="d">
+              <div class="reg-top">
+                <span class="reg-num">REG 06 // d = e<sup>&minus;1</sup> mod &phi;(n)</span>
+                <div class="reg-badges">
+                  <span class="reg-role">EXTENDED EUCLID</span>
+                  <span class="stamp stamp-priv">PRIV</span>
+                </div>
+              </div>
+              <div id="dVal" class="reg-value">—</div>
+            </article>
+          </div>
+
+          <!-- Encrypt / Decrypt Instruments -->
+          <div class="bay-section-head bay-section-spacer">
+            <div class="bay-title-group">
+              <span class="bay-index">BAY B</span>
+              <span class="bay-heading">FORWARD &amp; TRAPDOOR INSTRUMENTS</span>
+            </div>
+            <span class="bay-meta">SERVER BIGINT EXECUTION ONLY</span>
+          </div>
+
+          <div class="cipher-instruments">
+            <!-- Forward Encryption Instrument -->
+            <div class="instrument-card" id="encryptInstrument">
+              <div class="inst-header">
+                <span class="inst-formula">m &rarr; m<sup>e</sup> mod n &rarr; c</span>
+                <span class="stamp stamp-pub">PUB</span>
+              </div>
+              <div class="inst-readout-block">
+                <span class="inst-label">ENCODED INTEGER m (UTF-8 BIG-ENDIAN)</span>
+                <div id="mVal" class="inst-value">—</div>
+              </div>
+              <div class="inst-readout-block">
+                <span class="inst-label">CIPHERTEXT INTEGER c</span>
+                <div id="cVal" class="inst-value inst-value-blue">—</div>
+              </div>
+            </div>
+
+            <!-- Inverse Decryption Instrument -->
+            <div class="instrument-card" id="decryptInstrument">
+              <div class="inst-header">
+                <span class="inst-formula">c &rarr; c<sup>d</sup> mod n &rarr; m</span>
+                <span class="stamp stamp-priv">PRIV</span>
+              </div>
+              <div class="inst-readout-block">
+                <span class="inst-label">RECOVERED UTF-8 PLAINTEXT</span>
+                <div id="plainVal" class="inst-plain">—</div>
+              </div>
+              <div class="inst-readout-block">
+                <span class="inst-label">VERIFICATION</span>
+                <div id="verifyNote" class="inst-note">Awaiting ciphertext reduction mod n</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Square-and-Multiply Trace Table (hidden in Present Mode) -->
+          <div class="trace-section">
+            <div class="bay-section-head bay-section-spacer">
+              <div class="bay-title-group">
+                <span class="bay-index">BAY C</span>
+                <span class="bay-heading">SQUARE-AND-MULTIPLY REGISTER TRACE (FIRST 16 ITERATIONS)</span>
+              </div>
+              <span id="traceModeLabel" class="bay-meta">NO TRACE RECORDED</span>
+            </div>
+
+            <div class="trace-table-wrap">
+              <div class="trace-head" role="row">
+                <span>ITER i</span>
+                <span>BIT e<sub>i</sub></span>
+                <span>OP</span>
+                <span>SQUARED BASE b<sup>2<sup>i</sup></sup> mod n</span>
+                <span>ACCUMULATOR acc mod n</span>
+              </div>
+              <div id="traceList" class="trace-list" role="rowgroup">
+                <div class="trace-empty">Run ENCRYPT or DECRYPT to inspect binary exponentiation steps.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Exact Required Footer -->
+    <footer class="site-footer" data-enter>
+      <p class="footer-note">Textbook RSA with small primes, for learning only. Real systems use OAEP padding and 2048-bit keys.</p>
+      <span class="mono-label muted-text">NO OAEP · NO PADDING · EDUCATIONAL INSTRUMENT</span>
+    </footer>
+  </div>
+
+  <script src="/vendor/anime.min.js"></script>
+  <script src="/app.js"></script>
+</body>
+</html>
